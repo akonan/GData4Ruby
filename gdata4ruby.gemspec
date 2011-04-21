@@ -35,4 +35,6 @@ Gem::Specification.new do |s|
   else
     s.add_dependency(%q<oauth>, [">= 0.4.4"])
   end
+  
+  s.add_dependency('nokogiri', '>= 1.4.0')
 end
