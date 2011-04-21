@@ -160,6 +160,37 @@ module GData4Ruby
       end
       return xml.root
     end
+
+    def load_from_nokogiri(xml)
+      @exists = @include_etag = true
+
+      @feed_uri = (e = xml.at_css("id")) && e.content
+      @content_uri = (e = xml.at_css("content")) && e["src"]
+      @id = (e = xml.at_css("resourceId")) && e.content
+      @title = (e = xml.at_css("title")) && e.content
+
+      category = (attr = xml.at_css("category").attributes).merge(attr) { |k,v|
+        v.value
+      }.tap { |c| @categories << c }
+      @kind = category[:label] || category[:term] if category[:scheme] && category[:scheme] == 'http://schemas.google.com/g/2005#kind'
+      
+      @parent_uri = (e = xml.at_css("link[rel='http://schemas.google.com/docs/2007#parent']")) && e["href"]
+      @edit_uri = (e = xml.at_css("link[rel=edit]")) && e["href"]
+      @acl_uri = (e = xml.at_css("link[rel='http://schemas.google.com/acl/2007#accessControlList']")) && e["href"]
+
+      feed_link = (e = xml.at_css("feedLink")) && e.attributes.merge(e.attributes) { |k,v|
+        v.value
+      }.tap { |f| @feed_links << feed_link }
+      if feed_link && feed_link['rel'].include?('accessControlList') && !@acl_uri
+        @acl_uri = feed_link && feed_link['href'] 
+      end
+
+      @author_name = (e = xml.at_css("author name")) && e.content
+      @author_email = (e = xml.at_css("author email")) && e.content
+
+      @published = (e = xml.at_css("published")) && Time.parse(e.content)
+      @updated = (e = xml.at_css("updated")) && Time.parse(e.content)
+    end
     
     #Saves the object if it exsits, otherwise creates it.
     def save
