@@ -173,7 +173,7 @@ module GData4Ruby
       category = (attr = xml.at_css("category").attributes).merge(attr) { |k,v|
         v.value
       }.tap { |c| @categories << c }
-      @kind = category[:label] || category[:term] if category[:scheme] && category[:scheme] == 'http://schemas.google.com/g/2005#kind'
+      @kind = category["label"] || category["term"] if category["scheme"] && category["scheme"] == 'http://schemas.google.com/g/2005#kind'
       
       @parent_uri = (e = xml.at_css("link[rel='http://schemas.google.com/docs/2007#parent']")) && e["href"]
       @edit_uri = (e = xml.at_css("link[rel=edit]")) && e["href"]
