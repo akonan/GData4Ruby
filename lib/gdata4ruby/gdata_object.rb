@@ -163,7 +163,8 @@ module GData4Ruby
 
     def load_from_nokogiri(xml)
       @exists = @include_etag = true
-
+      @xml = xml
+      
       @feed_uri = (e = xml.at_css("id")) && e.content
       @content_uri = (e = xml.at_css("content")) && e["src"]
       @id = (e = xml.at_css("resourceId")) && e.content
